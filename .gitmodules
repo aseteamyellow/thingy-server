@@ -1,0 +1,3 @@
+[submodule "thingy-api-yellow"]
+	path = thingy-api-yellow
+	url = git@github.com:aseteamyellow/thingy-api-yellow.git
