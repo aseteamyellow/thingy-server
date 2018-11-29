@@ -1,0 +1,48 @@
+version: '2.1'
+services:
+  influxdb:
+    container_name: "influxdb"
+    image: "influxdb:latest"
+    ports:
+    - "8086:8086"
+    expose:
+    - "8086"
+    volumes:
+    - ./data/influxdb:/var/lib/influxdb
+  db:
+    container_name: "mysql_db"
+    image: mysql:5.7
+    restart: always
+    ports:
+    - "3306:3306"
+    - "33060:33060"
+    expose:
+    - "3306"
+    - "33060"
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      MYSQL_USER: "root"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+    - ./data/mysql_db:/var/lib/mysql_db
+  server:
+    container_name: "thingy_yellow_server"
+    build:
+      context: ./thingy-api-yellow
+      dockerfile: Dockerfile
+    environment:
+    - DATABASE_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
+      influxdb:
+        condition: service_started
+    ports:
+    - "8080:8080"
+    expose:
+    - "8080"
