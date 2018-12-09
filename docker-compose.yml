@@ -37,6 +37,7 @@ services:
       dockerfile: Dockerfile
     environment:
     - DATABASE_HOST=db
+    - INFLUXDB_HOST=influxdb
     depends_on:
       db:
         condition: service_healthy
